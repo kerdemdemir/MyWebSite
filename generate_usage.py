@@ -148,10 +148,21 @@ def parse_all_sessions():
 
 if __name__ == "__main__":
     data = parse_all_sessions()
-    out_path = Path(__file__).parent / "claude_usage.json"
-    with open(out_path, "w") as f:
+    base_dir = Path(__file__).parent
+
+    # Write JSON (for server use)
+    json_path = base_dir / "claude_usage.json"
+    with open(json_path, "w") as f:
         json.dump(data, f, indent=2)
+
+    # Write JS (works locally via file:// and on server)
+    js_path = base_dir / "claude_usage_data.js"
+    with open(js_path, "w") as f:
+        f.write("window.claudeUsageData = ")
+        json.dump(data, f, indent=2)
+        f.write(";\n")
+
     print(f"Total: {data['total']['messages']} messages, "
           f"{data['total']['input_tokens'] + data['total']['output_tokens']:,} tokens, "
           f"${data['total']['cost']:.2f} estimated cost")
-    print(f"Written to {out_path}")
+    print(f"Written to {json_path} and {js_path}")

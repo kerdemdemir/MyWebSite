@@ -1,4 +1,4 @@
-{
+window.claudeUsageData = {
   "generated_at": "2026-02-19T07:53:17.635193+00:00",
   "total": {
     "input_tokens": 354107,
@@ -387,4 +387,4 @@
       "messages": 90
     }
   ]
-}
+};
