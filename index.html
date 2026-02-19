@@ -625,6 +625,108 @@
             margin-top: 0.25rem;
         }
 
+        .token-totals {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-tab {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.9rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-tab.active {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+        }
+
+        .usage-table-wrap {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .usage-table-wrap::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .usage-table-wrap::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+
+        .usage-table-wrap::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .usage-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .usage-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .usage-table th {
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.65rem;
+            padding: 0.6rem 0.75rem;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .usage-table th:first-child {
+            text-align: left;
+        }
+
+        .usage-table td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-align: right;
+            color: var(--text-secondary);
+        }
+
+        .usage-table td:first-child {
+            text-align: left;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .usage-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .usage-table .cost-cell {
+            color: var(--accent-purple);
+            font-weight: 600;
+        }
+
+        .usage-table .today-row td {
+            background: rgba(124, 58, 237, 0.08);
+        }
+
         .token-placeholder {
             text-align: center;
             padding: 2rem 1rem;
@@ -727,6 +829,7 @@
             .chess-stats { grid-template-columns: repeat(3, 1fr); }
             .countdown-grid { grid-template-columns: repeat(3, 1fr); }
             .token-stats { grid-template-columns: 1fr; }
+            .token-totals { grid-template-columns: repeat(2, 1fr); }
             .chess-stat .value { font-size: 1.3rem; }
             .countdown-item .number { font-size: 1.5rem; }
         }
@@ -871,41 +974,48 @@
             </div>
 
             <!-- Claude Tokens Card -->
-            <div class="card claude-card">
+            <div class="card card-full claude-card">
                 <div class="card-header">
                     <div class="card-icon claude-icon">&#10024;</div>
                     <div>
                         <div class="card-title">Claude Token Usage</div>
-                        <div class="card-subtitle">Anthropic API</div>
+                        <div class="card-subtitle">Parsed from local Claude Code logs</div>
+                    </div>
+                    <div style="margin-left: auto; display: flex; gap: 0.5rem;">
+                        <button class="btn btn-tab active" id="tab-daily" onclick="switchTab('daily')">Daily</button>
+                        <button class="btn btn-tab" id="tab-weekly" onclick="switchTab('weekly')">Weekly</button>
                     </div>
                 </div>
 
-                <div class="api-key-section">
-                    <div class="api-key-input-group">
-                        <input type="password"
-                               class="api-key-input"
-                               id="api-key-input"
-                               placeholder="sk-ant-api03-..."
-                               autocomplete="off" />
-                        <button class="btn btn-primary" id="fetch-usage-btn" onclick="fetchClaudeUsage()">
-                            Fetch
-                        </button>
+                <div class="token-totals" id="token-totals">
+                    <div class="token-stat">
+                        <div class="token-label">Total Messages</div>
+                        <div class="token-value" id="cl-total-msgs">--</div>
                     </div>
-                    <div id="api-status"></div>
+                    <div class="token-stat">
+                        <div class="token-label">Total Tokens</div>
+                        <div class="token-value" id="cl-total-tokens">--</div>
+                    </div>
+                    <div class="token-stat">
+                        <div class="token-label">Total Cost</div>
+                        <div class="token-value" id="cl-total-cost">--</div>
+                    </div>
+                    <div class="token-stat">
+                        <div class="token-label">Sessions</div>
+                        <div class="token-value" id="cl-total-sessions">--</div>
+                    </div>
                 </div>
 
-                <div id="token-content">
+                <div class="usage-table-wrap" id="usage-table-wrap">
                     <div class="token-placeholder">
                         <div class="placeholder-icon">&#129302;</div>
-                        <div style="margin-bottom: 0.75rem;">Enter your Anthropic <strong>Admin API key</strong><br>to view token usage</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); text-align: left; max-width: 340px; line-height: 1.6;">
-                            <strong style="color: var(--text-secondary);">How to get it:</strong><br>
-                            1. Go to <a href="https://console.anthropic.com/settings/admin-keys" target="_blank" style="color: var(--accent-purple);">console.anthropic.com/settings/admin-keys</a><br>
-                            2. Click <strong>"Create Admin Key"</strong><br>
-                            3. Give it a name and copy the key<br>
-                            4. Paste it above (starts with <code style="background: rgba(255,255,255,0.08); padding: 0.1rem 0.3rem; border-radius: 3px;">sk-ant-admin...</code>)
-                        </div>
+                        <div>Loading usage data...</div>
                     </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 0.75rem; font-size: 0.7rem; color: var(--text-muted);">
+                    Generated by <code style="background: rgba(255,255,255,0.06); padding: 0.1rem 0.3rem; border-radius: 3px;">python3 generate_usage.py</code>
+                    &middot; Update by re-running the script and uploading <code style="background: rgba(255,255,255,0.06); padding: 0.1rem 0.3rem; border-radius: 3px;">claude_usage.json</code>
                 </div>
             </div>
 
@@ -1273,173 +1383,120 @@
         loadChessData();
 
         // ================================================
-        // CLAUDE TOKEN USAGE (Anthropic Admin API)
+        // CLAUDE TOKEN USAGE (from local JSONL via generate_usage.py)
         // ================================================
-        async function fetchClaudeUsage() {
-            const apiKey = document.getElementById('api-key-input').value.trim();
-            if (!apiKey) {
-                showApiStatus('Please enter your API key.', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('fetch-usage-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span>Fetching...';
-            showApiStatus('Connecting to Anthropic API...', 'loading');
-
-            try {
-                // Try the admin API usage endpoint
-                const now = new Date();
-                const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-                const startStr = startDate.toISOString().split('T')[0];
-                const endStr = now.toISOString().split('T')[0];
-
-                const res = await fetch(
-                    `https://api.anthropic.com/v1/organizations/usage?start_date=${startStr}&end_date=${endStr}`,
-                    {
-                        headers: {
-                            'x-api-key': apiKey,
-                            'anthropic-version': '2023-06-01',
-                        }
-                    }
-                );
-
-                if (res.ok) {
-                    const data = await res.json();
-                    renderTokenData(data);
-                    showApiStatus('Usage data loaded successfully!', 'success');
-                } else if (res.status === 403 || res.status === 401) {
-                    // Try alternative: count tokens with a simple request to check key validity
-                    const testRes = await fetch('https://api.anthropic.com/v1/messages', {
-                        method: 'POST',
-                        headers: {
-                            'x-api-key': apiKey,
-                            'anthropic-version': '2023-06-01',
-                            'content-type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            model: 'claude-haiku-4-5-20251001',
-                            max_tokens: 10,
-                            messages: [{ role: 'user', content: 'Say "ok"' }]
-                        })
-                    });
-
-                    if (testRes.ok) {
-                        const testData = await testRes.json();
-                        showApiStatus('API key is valid! Usage endpoint requires an Admin API key. Showing test call usage below.', 'success');
-                        renderSingleCallData(testData);
-                    } else {
-                        const errData = await testRes.json().catch(() => ({}));
-                        showApiStatus(
-                            `API error: ${errData.error?.message || testRes.statusText}. The usage endpoint requires an Admin API key from console.anthropic.com.`,
-                            'error'
-                        );
-                    }
-                } else {
-                    const errData = await res.json().catch(() => ({}));
-                    showApiStatus(`Error: ${errData.error?.message || res.statusText}`, 'error');
-                }
-            } catch (err) {
-                showApiStatus(`Network error: ${err.message}. This may be due to CORS restrictions - the Anthropic API doesn't support browser requests. Try using a backend proxy.`, 'error');
-                console.error('Claude API error:', err);
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = 'Fetch';
-        }
-
-        function showApiStatus(msg, type) {
-            const el = document.getElementById('api-status');
-            el.innerHTML = `<div class="status-msg ${type}">${msg}</div>`;
-        }
-
-        function renderTokenData(data) {
-            const container = document.getElementById('token-content');
-            // The usage API response format may vary; handle generic structure
-            const usage = data.usage || data;
-
-            let inputTokens = 0;
-            let outputTokens = 0;
-
-            if (Array.isArray(usage)) {
-                usage.forEach(entry => {
-                    inputTokens += entry.input_tokens || 0;
-                    outputTokens += entry.output_tokens || 0;
-                });
-            } else {
-                inputTokens = usage.input_tokens || 0;
-                outputTokens = usage.output_tokens || 0;
-            }
-
-            const totalTokens = inputTokens + outputTokens;
-
-            container.innerHTML = `
-                <div class="token-stats">
-                    <div class="token-stat">
-                        <div class="token-label">Input Tokens</div>
-                        <div class="token-value">${formatNumber(inputTokens)}</div>
-                        <div class="token-detail">Prompts sent</div>
-                    </div>
-                    <div class="token-stat">
-                        <div class="token-label">Output Tokens</div>
-                        <div class="token-value">${formatNumber(outputTokens)}</div>
-                        <div class="token-detail">Responses generated</div>
-                    </div>
-                    <div class="token-stat">
-                        <div class="token-label">Total Tokens</div>
-                        <div class="token-value">${formatNumber(totalTokens)}</div>
-                        <div class="token-detail">This month</div>
-                    </div>
-                    <div class="token-stat">
-                        <div class="token-label">Est. Cost</div>
-                        <div class="token-value">$${estimateCost(inputTokens, outputTokens)}</div>
-                        <div class="token-detail">Approximate</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderSingleCallData(data) {
-            const container = document.getElementById('token-content');
-            const usage = data.usage || {};
-
-            container.innerHTML = `
-                <div class="token-stats">
-                    <div class="token-stat">
-                        <div class="token-label">Test Call Input</div>
-                        <div class="token-value">${formatNumber(usage.input_tokens || 0)}</div>
-                        <div class="token-detail">Tokens sent</div>
-                    </div>
-                    <div class="token-stat">
-                        <div class="token-label">Test Call Output</div>
-                        <div class="token-value">${formatNumber(usage.output_tokens || 0)}</div>
-                        <div class="token-detail">Tokens received</div>
-                    </div>
-                </div>
-                <div style="text-align:center; margin-top:1rem; color: var(--text-muted); font-size:0.8rem;">
-                    For full usage stats, use an <strong>Admin API key</strong> from
-                    <a href="https://console.anthropic.com/settings/admin-keys" target="_blank"
-                       style="color: var(--accent-purple);">console.anthropic.com</a>
-                </div>
-            `;
-        }
+        let claudeData = null;
+        let currentTab = 'daily';
 
         function formatNumber(n) {
+            if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + 'B';
             if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
             if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
             return n.toLocaleString();
         }
 
-        function estimateCost(input, output) {
-            // Rough estimate using Sonnet pricing: $3/M input, $15/M output
-            const cost = (input / 1_000_000) * 3 + (output / 1_000_000) * 15;
-            return cost.toFixed(2);
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-daily').classList.toggle('active', tab === 'daily');
+            document.getElementById('tab-weekly').classList.toggle('active', tab === 'weekly');
+            if (claudeData) renderUsageTable(claudeData);
         }
 
-        // Allow Enter key to trigger fetch
-        document.getElementById('api-key-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') fetchClaudeUsage();
-        });
+        async function loadClaudeUsage() {
+            try {
+                const res = await fetch('claude_usage.json');
+                if (!res.ok) throw new Error('File not found');
+                claudeData = await res.json();
+
+                const t = claudeData.total;
+                document.getElementById('cl-total-msgs').textContent = formatNumber(t.messages);
+                document.getElementById('cl-total-tokens').textContent =
+                    formatNumber(t.input_tokens + t.output_tokens + t.cache_creation_tokens + t.cache_read_tokens);
+                document.getElementById('cl-total-cost').textContent = '$' + t.cost.toFixed(2);
+                document.getElementById('cl-total-sessions').textContent = t.sessions;
+
+                renderUsageTable(claudeData);
+            } catch (err) {
+                document.getElementById('usage-table-wrap').innerHTML = `
+                    <div class="token-placeholder">
+                        <div class="placeholder-icon">&#128203;</div>
+                        <div>No usage data found.<br>
+                        Run <code style="background:rgba(255,255,255,0.08);padding:0.2rem 0.4rem;border-radius:4px;">python3 generate_usage.py</code> to generate it.</div>
+                    </div>`;
+            }
+        }
+
+        function renderUsageTable(data) {
+            const wrap = document.getElementById('usage-table-wrap');
+            const today = new Date().toISOString().slice(0, 10);
+
+            let rows;
+            if (currentTab === 'weekly') {
+                // Aggregate daily data into weeks
+                const weeks = {};
+                data.daily.forEach(d => {
+                    const dt = new Date(d.date);
+                    const dayOfWeek = dt.getDay();
+                    const monday = new Date(dt);
+                    monday.setDate(dt.getDate() - ((dayOfWeek + 6) % 7));
+                    const weekKey = monday.toISOString().slice(0, 10);
+                    if (!weeks[weekKey]) {
+                        weeks[weekKey] = { date: weekKey, input_tokens: 0, output_tokens: 0,
+                            cache_creation_tokens: 0, cache_read_tokens: 0, cost: 0, messages: 0 };
+                    }
+                    weeks[weekKey].input_tokens += d.input_tokens;
+                    weeks[weekKey].output_tokens += d.output_tokens;
+                    weeks[weekKey].cache_creation_tokens += d.cache_creation_tokens || 0;
+                    weeks[weekKey].cache_read_tokens += d.cache_read_tokens || 0;
+                    weeks[weekKey].cost += d.cost;
+                    weeks[weekKey].messages += d.messages;
+                });
+                rows = Object.values(weeks).sort((a, b) => b.date.localeCompare(a.date));
+            } else {
+                rows = [...data.daily].reverse();
+            }
+
+            const dateLabel = currentTab === 'weekly' ? 'Week of' : 'Date';
+
+            let html = `<table class="usage-table">
+                <thead><tr>
+                    <th>${dateLabel}</th>
+                    <th>Messages</th>
+                    <th>Input</th>
+                    <th>Output</th>
+                    <th>Cache Write</th>
+                    <th>Cache Read</th>
+                    <th>Cost</th>
+                </tr></thead><tbody>`;
+
+            rows.forEach(r => {
+                const isToday = currentTab === 'daily' && r.date === today;
+                const rowClass = isToday ? ' class="today-row"' : '';
+                const dateDisplay = currentTab === 'weekly'
+                    ? `${r.date}`
+                    : formatDate(r.date);
+
+                html += `<tr${rowClass}>
+                    <td>${dateDisplay}${isToday ? ' <span style="color:var(--accent-green);font-size:0.65rem;">TODAY</span>' : ''}</td>
+                    <td>${r.messages}</td>
+                    <td>${formatNumber(r.input_tokens)}</td>
+                    <td>${formatNumber(r.output_tokens)}</td>
+                    <td>${formatNumber(r.cache_creation_tokens || 0)}</td>
+                    <td>${formatNumber(r.cache_read_tokens || 0)}</td>
+                    <td class="cost-cell">$${r.cost.toFixed(2)}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            wrap.innerHTML = html;
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        loadClaudeUsage();
     </script>
 </body>
 </html>
