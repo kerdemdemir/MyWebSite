@@ -245,6 +245,167 @@
         .chess-stat.best .value { color: var(--accent-orange); }
         .chess-stat.games .value { color: var(--accent-blue); }
 
+        /* Dramatic "vs yesterday" banner */
+        .yesterday-banner {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .yesterday-banner.rising {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.12));
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .yesterday-banner.falling {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.12), rgba(239, 68, 68, 0.12));
+            border: 1px solid rgba(236, 72, 153, 0.25);
+        }
+
+        .yesterday-banner.neutral {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .yesterday-banner .banner-emoji {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .yesterday-banner.rising .banner-emoji {
+            animation: rocketLaunch 2s ease-in-out infinite;
+        }
+
+        .yesterday-banner.falling .banner-emoji {
+            animation: trainCrash 1.5s ease-in-out infinite;
+        }
+
+        @keyframes rocketLaunch {
+            0%, 100% { transform: translateY(0) rotate(-10deg); }
+            25% { transform: translateY(-8px) rotate(0deg); }
+            50% { transform: translateY(-16px) rotate(5deg); }
+            75% { transform: translateY(-8px) rotate(-5deg); }
+        }
+
+        @keyframes trainCrash {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            20% { transform: translateX(-4px) rotate(-3deg); }
+            40% { transform: translateX(6px) rotate(2deg); }
+            60% { transform: translateX(-3px) rotate(-1deg); }
+            80% { transform: translateX(2px) rotate(1deg); }
+        }
+
+        .yesterday-banner .banner-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .yesterday-banner.rising .banner-title {
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .yesterday-banner.falling .banner-title {
+            background: linear-gradient(90deg, #ec4899, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .yesterday-banner.neutral .banner-title {
+            color: var(--text-secondary);
+        }
+
+        .yesterday-banner .banner-detail {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .yesterday-banner .banner-detail .delta {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .yesterday-banner.rising .banner-detail .delta { color: #10b981; }
+        .yesterday-banner.falling .banner-detail .delta { color: #ec4899; }
+
+        .yesterday-banner .banner-games {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        .yesterday-banner .banner-particles {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .yesterday-banner.rising .banner-particles::before,
+        .yesterday-banner.rising .banner-particles::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #10b981;
+            opacity: 0.4;
+            animation: sparkle 3s linear infinite;
+        }
+
+        .yesterday-banner.rising .banner-particles::before {
+            left: 15%; animation-delay: 0s;
+        }
+
+        .yesterday-banner.rising .banner-particles::after {
+            right: 20%; animation-delay: -1.5s;
+        }
+
+        @keyframes sparkle {
+            0% { bottom: -5px; opacity: 0; }
+            20% { opacity: 0.6; }
+            100% { bottom: 100%; opacity: 0; }
+        }
+
+        .yesterday-banner.falling .banner-particles::before,
+        .yesterday-banner.falling .banner-particles::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 2px;
+            background: #ec4899;
+            opacity: 0.3;
+            animation: debris 2s linear infinite;
+        }
+
+        .yesterday-banner.falling .banner-particles::before {
+            left: 25%; animation-delay: 0s;
+        }
+
+        .yesterday-banner.falling .banner-particles::after {
+            right: 25%; animation-delay: -1s;
+        }
+
+        @keyframes debris {
+            0% { top: 0; opacity: 0; transform: rotate(0deg); }
+            20% { opacity: 0.5; }
+            100% { top: 100%; opacity: 0; transform: rotate(180deg) translateX(30px); }
+        }
+
         .chart-container {
             position: relative;
             height: 300px;
@@ -290,7 +451,7 @@
 
         .countdown-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 0.75rem;
             margin: 1.5rem 0;
         }
@@ -564,7 +725,7 @@
             .header h1 { font-size: 2rem; }
             .dashboard-grid { grid-template-columns: 1fr; }
             .chess-stats { grid-template-columns: repeat(3, 1fr); }
-            .countdown-grid { grid-template-columns: repeat(2, 1fr); }
+            .countdown-grid { grid-template-columns: repeat(3, 1fr); }
             .token-stats { grid-template-columns: 1fr; }
             .chess-stat .value { font-size: 1.3rem; }
             .countdown-item .number { font-size: 1.5rem; }
@@ -625,6 +786,15 @@
                     </div>
                 </div>
 
+                <!-- Dramatic "vs yesterday" banner -->
+                <div class="yesterday-banner neutral" id="yesterday-banner" style="display:none;">
+                    <div class="banner-particles"></div>
+                    <div class="banner-emoji" id="banner-emoji"></div>
+                    <div class="banner-title" id="banner-title">Loading...</div>
+                    <div class="banner-detail" id="banner-detail"></div>
+                    <div class="banner-games" id="banner-games"></div>
+                </div>
+
                 <div class="chart-container" id="chart-area">
                     <div class="chess-loading" id="chess-loading">
                         <div class="piece-anim">&#9816;</div>
@@ -676,6 +846,14 @@
                         <div class="number" id="ret-hours">--</div>
                         <div class="unit">Hours</div>
                     </div>
+                    <div class="countdown-item">
+                        <div class="number" id="ret-minutes">--</div>
+                        <div class="unit">Minutes</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="number" id="ret-seconds">--</div>
+                        <div class="unit">Seconds</div>
+                    </div>
                 </div>
 
                 <div class="retirement-progress">
@@ -719,7 +897,14 @@
                 <div id="token-content">
                     <div class="token-placeholder">
                         <div class="placeholder-icon">&#129302;</div>
-                        <div>Enter your Anthropic Admin API key<br>to view token usage</div>
+                        <div style="margin-bottom: 0.75rem;">Enter your Anthropic <strong>Admin API key</strong><br>to view token usage</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-align: left; max-width: 340px; line-height: 1.6;">
+                            <strong style="color: var(--text-secondary);">How to get it:</strong><br>
+                            1. Go to <a href="https://console.anthropic.com/settings/admin-keys" target="_blank" style="color: var(--accent-purple);">console.anthropic.com/settings/admin-keys</a><br>
+                            2. Click <strong>"Create Admin Key"</strong><br>
+                            3. Give it a name and copy the key<br>
+                            4. Paste it above (starts with <code style="background: rgba(255,255,255,0.08); padding: 0.1rem 0.3rem; border-radius: 3px;">sk-ant-admin...</code>)
+                        </div>
                     </div>
                 </div>
             </div>
@@ -758,12 +943,16 @@
                 document.getElementById('ret-months').textContent = '0';
                 document.getElementById('ret-days').textContent = '0';
                 document.getElementById('ret-hours').textContent = '0';
+                document.getElementById('ret-minutes').textContent = '0';
+                document.getElementById('ret-seconds').textContent = '0';
                 document.getElementById('retirement-fun-fact').textContent = "You're retired! Enjoy!";
                 return;
             }
 
             const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
             const totalHours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const totalMinutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const totalSeconds = Math.floor((diff % (1000 * 60)) / 1000);
 
             // Calculate years, months, days
             let years = RETIREMENT_DATE.getFullYear() - now.getFullYear();
@@ -784,6 +973,8 @@
             document.getElementById('ret-months').textContent = months;
             document.getElementById('ret-days').textContent = days;
             document.getElementById('ret-hours').textContent = totalHours;
+            document.getElementById('ret-minutes').textContent = String(totalMinutes).padStart(2, '0');
+            document.getElementById('ret-seconds').textContent = String(totalSeconds).padStart(2, '0');
 
             // Career progress
             const careerTotal = RETIREMENT_DATE - CAREER_START;
@@ -865,6 +1056,9 @@
                 // Sort by date
                 ratingPoints.sort((a, b) => a.date - b.date);
 
+                // Calculate "vs yesterday" data
+                renderYesterdayBanner(ratingPoints);
+
                 // Downsample if too many points (keep ~200 points max)
                 let displayPoints = ratingPoints;
                 if (ratingPoints.length > 200) {
@@ -883,6 +1077,100 @@
                 document.getElementById('chess-loading').innerHTML =
                     '<div style="color: var(--accent-pink);">Failed to load chess data. Please refresh.</div>';
                 console.error('Chess data error:', err);
+            }
+        }
+
+        function renderYesterdayBanner(ratingPoints) {
+            const banner = document.getElementById('yesterday-banner');
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterdayStart = new Date(todayStart);
+            yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+
+            // Games from yesterday
+            const yesterdayGames = ratingPoints.filter(p =>
+                p.date >= yesterdayStart && p.date < todayStart
+            );
+
+            // Games from the day before yesterday
+            const dayBeforeStart = new Date(yesterdayStart);
+            dayBeforeStart.setDate(dayBeforeStart.getDate() - 1);
+            const dayBeforeGames = ratingPoints.filter(p =>
+                p.date >= dayBeforeStart && p.date < yesterdayStart
+            );
+
+            // If no recent games, check today vs yesterday
+            const todayGames = ratingPoints.filter(p => p.date >= todayStart);
+            const recentGames = todayGames.length > 0 ? todayGames : yesterdayGames;
+            const previousGames = todayGames.length > 0 ? yesterdayGames : dayBeforeGames;
+
+            if (recentGames.length === 0 && previousGames.length === 0) {
+                banner.style.display = 'none';
+                return;
+            }
+
+            const latestRating = recentGames.length > 0
+                ? recentGames[recentGames.length - 1].rating
+                : previousGames[previousGames.length - 1].rating;
+
+            const previousRating = previousGames.length > 0
+                ? previousGames[0].rating
+                : (recentGames.length > 0 ? recentGames[0].rating : latestRating);
+
+            const delta = latestRating - previousRating;
+            const gamesCount = todayGames.length > 0 ? todayGames.length : yesterdayGames.length;
+            const periodLabel = todayGames.length > 0 ? 'today' : 'yesterday';
+
+            banner.style.display = 'flex';
+
+            const risingMessages = [
+                "TO THE MOON!",
+                "WE'RE FLYING!",
+                "UNSTOPPABLE!",
+                "ROCKET FUEL!",
+                "ELO MACHINE!",
+            ];
+
+            const fallingMessages = [
+                "TRAIN WRECK!",
+                "GOING DOWN!",
+                "MAYDAY MAYDAY!",
+                "BRACE FOR IMPACT!",
+                "ABANDON SHIP!",
+            ];
+
+            const neutralMessages = [
+                "HOLDING STEADY",
+                "PERFECTLY BALANCED",
+                "ROCK SOLID",
+            ];
+
+            if (delta > 0) {
+                banner.className = 'yesterday-banner rising';
+                document.getElementById('banner-emoji').textContent = '🚀';
+                const msg = risingMessages[Math.floor(Math.random() * risingMessages.length)];
+                document.getElementById('banner-title').textContent = msg;
+                document.getElementById('banner-detail').innerHTML =
+                    `<span class="delta">+${delta}</span> points since yesterday`;
+            } else if (delta < 0) {
+                banner.className = 'yesterday-banner falling';
+                document.getElementById('banner-emoji').textContent = '🚂💨';
+                const msg = fallingMessages[Math.floor(Math.random() * fallingMessages.length)];
+                document.getElementById('banner-title').textContent = msg;
+                document.getElementById('banner-detail').innerHTML =
+                    `<span class="delta">${delta}</span> points since yesterday`;
+            } else {
+                banner.className = 'yesterday-banner neutral';
+                document.getElementById('banner-emoji').textContent = '⚖️';
+                const msg = neutralMessages[Math.floor(Math.random() * neutralMessages.length)];
+                document.getElementById('banner-title').textContent = msg;
+                document.getElementById('banner-detail').innerHTML =
+                    `<span class="delta">±0</span> no change`;
+            }
+
+            if (gamesCount > 0) {
+                document.getElementById('banner-games').textContent =
+                    `${gamesCount} rapid game${gamesCount !== 1 ? 's' : ''} played ${periodLabel}`;
             }
         }
 
